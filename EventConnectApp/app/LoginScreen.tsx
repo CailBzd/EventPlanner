@@ -19,7 +19,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await authService.login("testuser", "Password123!");
+      const response = await authService.login(username, password);
       if (response.status === 200) {
         const data: LoginResult = response.data;
         if (data.token && data.userId) {
@@ -49,7 +49,7 @@ export default function LoginScreen() {
   };
 
   const handleForgotPassword = () => {
-    Alert.alert('Mot de passe oublié', 'Fonctionnalité non implémentée.');
+    router.push('/ForgotPasswordScreen');
   };
 
   const handleSignUp = () => {

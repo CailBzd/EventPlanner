@@ -1,29 +1,29 @@
 using MediatR;
 using EventPlanner.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace EventPlanner.Features;
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly UserManager<User> _userManager;
 
-    public CreateUserCommandHandler(ApplicationDbContext aContext)
+    public CreateUserCommandHandler(UserManager<User> aUserManager)
     {
-        _context = aContext;
+        _userManager = aUserManager;
     }
 
     public async Task<Guid> Handle(CreateUserCommand aRequest, CancellationToken aCancellationToken)
     {
-        var vUserEntity = new User
+        var vUser = new User
         {
-            Id = Guid.NewGuid(),
             UserName = aRequest.UserName,
             Email = aRequest.Email,
-            PasswordHash = aRequest.PasswordHash
+            PasswordHash = aRequest.Password
         };
 
-        await _context.Users.AddAsync(vUserEntity, aCancellationToken);
-        await _context.SaveChangesAsync(aCancellationToken);
+        await _userManager.CreateAsync(vUser, aRequest.Password);
+        await _userManager.AddToRoleAsync(vUser, "User");
 
-        return vUserEntity.Id;
+        return vUser.Id;
     }
 }

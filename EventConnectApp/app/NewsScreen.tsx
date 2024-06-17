@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { User } from '@/types/User';
 import { userService } from '@/services/userService';
+import { useTranslation } from 'react-i18next';
+import { router } from 'expo-router';
 
 const data = [
-  { id: '1', title: 'News Item 1', content: 'Content for news item 1' },
-  { id: '2', title: 'News Item 2', content: 'Content for news item 2' },
-  { id: '3', title: 'News Item 3', content: 'Content for news item 3' },
-  // Ajoutez plus d'articles de journal ici
+  { id: '1', title: 'Event 1', date: '2023-06-15', participants: 50, location: 'Paris', content: 'Details about event 1' },
+  { id: '2', title: 'Event 2', date: '2023-07-20', participants: 75, location: 'London', content: 'Details about event 2' },
+  { id: '3', title: 'Event 3', date: '2023-08-25', participants: 100, location: 'New York', content: 'Details about event 3' },
+  // Add more events here
 ];
 
 const NewsScreen = () => {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
+
   const [user, setUser] = useState<User | null>();
 
   useEffect(() => {
@@ -33,18 +38,21 @@ const NewsScreen = () => {
   }, []);
 
   const handleCreateEvent = () => {
-    // Logique pour créer un événement
-    console.log("Créer un événement");
+    // Logic to create an event
+    console.log("Create an event");
   };
 
   const handleAvatarPress = () => {
-    router.push('/ProfileScreen');
+    router.push('ProfileScreen');
+  };
+
+  const handleEventPress = (eventId) => {
+    router.push({ pathname: '/EventScreen', params: { eventId } });
   };
 
   const avatarSource = user?.profilePicture
-  ? { uri: `data:image/png;base64,${user.profilePicture}` }
-  : require('../assets/images/logo.jpg');  // Assurez-vous d'avoir une image par défaut dans votre dossier assets
-
+    ? { uri: `data:image/png;base64,${user.profilePicture}` }
+    : require('../assets/images/logo.jpg');  // Make sure you have a default image in your assets folder
 
   return (
     <View style={styles.container}>
@@ -61,15 +69,18 @@ const NewsScreen = () => {
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.newsItem}>
-            <Text style={styles.newsTitle}>{item.title}</Text>
+          <TouchableOpacity onPress={() => handleEventPress(item.id)} style={styles.eventItem}>
+            <Text style={styles.eventTitle}>{item.title}</Text>
+            <Text>Date: {item.date}</Text>
+            <Text>Participants: {item.participants}</Text>
+            <Text>Location: {item.location}</Text>
             <Text>{item.content}</Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleCreateEvent}>
-          <Text style={styles.buttonText}>Créer un événement</Text>
+          <Text style={styles.buttonText}>{t("news:createEvent")}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -101,7 +112,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#fff',
   },
-  newsItem: {
+  eventItem: {
     marginBottom: 15,
     padding: 10,
     borderColor: '#ddd',
@@ -109,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginHorizontal: 20,
   },
-  newsTitle: {
+  eventTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,

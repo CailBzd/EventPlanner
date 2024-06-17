@@ -11,6 +11,8 @@ export const authKeys = {
 
 export const authService = {
   login,
+  register,
+  forgotPassword
 };
 
 function login(username: string, password: string): Promise<AxiosResponse<LoginResult>> {
@@ -22,19 +24,22 @@ function login(username: string, password: string): Promise<AxiosResponse<LoginR
   });
 };
 
+function register(username: string, email: string, password: string): Promise<AxiosResponse<LoginResult>> {
 
-// export const registerService = async (username, password) => {
-//   return await axios.post(
-//     `${API_URL}/register`,
-//     { "username": username, "password": password },
-//     { headers: { 'Content-Type': 'application/json', 'accept': '*/*' } }
-//   );
-// };
+  return axiosApiInstance.post(API_URL + `/register`,
+    { username, email, password }, 
+    {
+    headers: {'accept': '*/*','Content-Type': 'application/json'}
+  });
+};
 
-// export const logoutService = async () => {
-//   return await axios.post(
-//     `${API_URL}/logout`,
-//     {},
-//     { headers: { 'Content-Type': 'application/json', 'accept': '*/*' } }
-//   );
-// };
+function forgotPassword(email: string): Promise<AxiosResponse<LoginResult>> {
+  return axiosApiInstance.post(API_URL + `/forgotPassword`,
+    { email }, 
+    {
+    headers: {'accept': '*/*','Content-Type': 'application/json'}
+  });
+};
+
+
+

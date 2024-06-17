@@ -1,108 +1,123 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import axios, { AxiosError } from 'axios';
-import { authService } from '@/services/authService';
-import { router } from 'expo-router';
+import { StyleSheet, Text, Image, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LoginResult } from '../types/LoginResult';
+import { useTranslation } from 'react-i18next';
+import Icon from 'react-native-vector-icons/AntDesign';
+import { authService } from '@/services/authService';
+import { Colors } from '@/constants/Colors';
+import { isMail, isPasswordSecure } from '@/utils/validation';
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async () => {
-    try {
+  const handleSignUp = async () => {
+    if (username === '' || email === '' || password === '') {
+      Alert.alert(t("general:alert.title"), t("general:alert.emptyMessage") )
+      return;
+  }
 
-      // const response = await authService.login(username, password);
-      const response = await authService.login("testuser", "Password123!");
-      if (response.status === 200) {
-        const data: LoginResult = response.data;
-        console.log(data);
-        if (data.token && data.userId) {
-          console.log("OK");
-          // Stockez le token et l'ID de l'utilisateur pour une utilisation ultérieure
-          await AsyncStorage.setItem('userToken', data.token);
-          await AsyncStorage.setItem('userId', data.userId);
+  if (!isMail(email)) {
+    Alert.alert(t("general:alert.title"),t('general:alert.mailInvalid'));
+    return;
+  }
 
-          router.push('/dashboard');
-          Alert.alert('Success', 'Logged in successfully');
-        } else {
-          Alert.alert('Erreur', 'Identifiants incorrects');
-        }
-      } else {
-        Alert.alert('Erreur', 'Identifiants incorrects');
-      }
-    } catch (error: unknown) {
+  if (password !== confirmPassword) {
+    Alert.alert(t("general:alert.title"), t("general:alert.wrongPassword"));
+    return;
+  }
 
-      if (axios.isAxiosError(error)) {
-        if (error.response && error.response.status === 401) {
-          Alert.alert('Erreur', 'Identifiants incorrects');
-        } else {
-          Alert.alert('Erreur', 'Une erreur est survenue');
-        }
-      } else {
-        Alert.alert('Erreur', 'Une erreur est survenue');
-      }
+  if (!isPasswordSecure(password)) {
+    Alert.alert(t("general:alert.title"),t('general:alert.passwordNotSecure'));
+    return;
+  }
+
+  try {
+    const response = await authService.register(
+      username,
+      email,
+      password,
+    );
+
+    if (response.status === 200) {
+      router.push('/LoginScreen');
+    } else {
+      Alert.alert(t("general:alert.title"), t("general:alert.createAccountfailed"));
     }
-  };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 400) {
+        Alert.alert(t("general:alert.title"), t("general:alert.invalidData"));
+      } else {
+        Alert.alert(t("general:alert.title"), t("general:alert.generalError"));
+      }
+    } else {
+      Alert.alert(t("general:alert.title"), t("general:alert.generalError"));
+    }
+  }
+};
 
-  const handleForgotPassword = () => {
-    // Gérer la navigation vers la page de réinitialisation du mot de passe
-    Alert.alert('Mot de passe oublié', 'Fonctionnalité non implérmentée.');
-  };
+const handleSignIn = () => {
+  router.push('/LoginScreen');
+};
 
-  const handleSignUp = () => {
-    // navigation.navigate('SignUp');
-  };
+return (
+  <View style={styles.container}>
+    <Image source={require('@/assets/images/logo.jpg')} style={styles.presentationImage} />
+    <Text style={styles.title}>{t("register:title")}</Text>
 
-  return (
-    <View style={styles.container}>
-
-      <Image source={require('@/assets/images/logo.jpg')} style={styles.presentationImage} />
-      <Text style={styles.title}>S'inscrire</Text>
-
+    <TextInput
+      style={styles.input}
+      placeholder={t("register:username")}
+      autoCapitalize="none"
+      value={username}
+      onChangeText={setUsername}
+    />
+    <TextInput
+      style={styles.input}
+      placeholder={t("register:mail")}
+      autoCapitalize="none"
+      value={email}
+      onChangeText={setEmail}
+    />
+    <View style={styles.passwordContainer}>
       <TextInput
-        style={styles.input}
-        placeholder="Nom d'utilisateur"
-        autoCapitalize="none"
-        value={username}
-        onChangeText={setUsername}
+        style={styles.passwordInput}
+        placeholder={t("register:password")}
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={!showPassword}
       />
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Mot de passe"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
-        />
-        <TouchableOpacity
-          style={styles.showPasswordButton}
-          onPress={() => setShowPassword(!showPassword)}
-        >
-          <Text style={styles.showPasswordText}>
-            {showPassword ? 'Cacher' : 'Voir'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Se connecter</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleForgotPassword}>
-        <Text style={styles.link}>Mot de passe oublié ?</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleSignUp}>
-        <Text style={styles.link}>S'inscrire</Text>
+      <TouchableOpacity
+        style={styles.showPasswordButton}
+        onPress={() => setShowPassword(!showPassword)}
+      >
+        <Icon name={showPassword ? 'eyeo' : 'eye'} size={20} color="#3F9296" />
       </TouchableOpacity>
     </View>
-  );
+    <TextInput
+      style={styles.input}
+      placeholder={t("register:confirmPassword")}
+      value={confirmPassword}
+      onChangeText={setConfirmPassword}
+      secureTextEntry={!showPassword}
+    />
+
+    <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+      <Text style={styles.buttonText}>{t("register:signup")}</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity onPress={handleSignIn}>
+      <Text style={styles.link}>{t("login:signin")}</Text>
+    </TouchableOpacity>
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -127,16 +142,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 15,
   },
-  presentationImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 10,
-    marginBottom: 20,
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
   },
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: '#3b5998',
+    backgroundColor: '#3F9296',
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -148,17 +166,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   link: {
-    color: '#3b5998',
+    color: Colors.light.text,
     fontSize: 16,
     marginBottom: 15,
   },
   showPasswordButton: {
-    position: 'absolute',
-    right: 10,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  showPasswordText: {
-    color: '#007BFF',
-    fontSize: 16,
+  presentationImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: 10,
+    marginBottom: 20,
   },
   passwordContainer: {
     flexDirection: 'row',

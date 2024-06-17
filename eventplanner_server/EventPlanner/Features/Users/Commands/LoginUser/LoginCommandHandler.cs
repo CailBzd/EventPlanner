@@ -15,7 +15,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
     private readonly IConfiguration _configuration;
     private readonly ITokenService _tokenService;
 
-    public LoginCommandHandler(UserManager<User> aUserManager, SignInManager<User> aSignInManager,  IConfiguration aConfiguration, ITokenService aTokenService)
+    public LoginCommandHandler(UserManager<User> aUserManager, SignInManager<User> aSignInManager, IConfiguration aConfiguration, ITokenService aTokenService)
     {
         _userManager = aUserManager;
         _signInManager = aSignInManager;
@@ -28,7 +28,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
         var vUser = await _userManager.FindByNameAsync(aRequest.Username);
         if (vUser == null)
         {
-            throw new UnauthorizedAccessException("Invalid username or password");
+            // Si l'utilisateur mais son mail au lieu de son nom d'utilisateur
+            vUser = await _userManager.FindByEmailAsync(aRequest.Username);
+            if (vUser == null)
+            {
+                throw new UnauthorizedAccessException("Invalid username or password");
+            }
         }
 
         var vResult = await _signInManager.CheckPasswordSignInAsync(vUser, aRequest.Password, false);
