@@ -8,6 +8,8 @@ import NotFoundScreen from './NotFoundScreen';
 import NewsScreen from './NewsScreen';
 import ProfileScreen from './ProfileScreen';
 const Stack = createNativeStackNavigator();
+import '@/utils/i18n'; 
+
 
 export default function RootNavigator() {
   return (

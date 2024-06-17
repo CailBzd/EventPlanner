@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../types/User';
 import { userService } from '@/services/userService';
-import Icon from 'react-native-vector-icons/AntDesign';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
@@ -12,6 +12,8 @@ export default function ProfileScreen() {
   const [token, setToken] = useState<string>('');
   const [profileImageBase64, setProfileImageBase64] = useState<string | null | undefined>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -186,7 +188,7 @@ export default function ProfileScreen() {
       </Modal>
 
       <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Save</Text>
+        <Text style={styles.buttonText}>{t('save')}</Text>
       </TouchableOpacity>
     </View>
   );

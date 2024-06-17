@@ -6,8 +6,12 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginResult } from '../types/LoginResult';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginScreen() {
+
+  const { t } = useTranslation();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -55,11 +59,11 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Image source={require('@/assets/images/logo.jpg')} style={styles.presentationImage} />
-      <Text style={styles.title}>Connexion</Text>
+      <Text style={styles.title}>{t("login:title")}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Nom d'utilisateur"
+        placeholder={t("login:username")}
         autoCapitalize="none"
         value={username}
         onChangeText={setUsername}
@@ -67,7 +71,7 @@ export default function LoginScreen() {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Mot de passe"
+          placeholder={t("login:password")}
           value={password}
           onChangeText={setPassword}
           secureTextEntry={!showPassword}
@@ -81,15 +85,15 @@ export default function LoginScreen() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Se connecter</Text>
+        <Text style={styles.buttonText}>{t("login:signin")}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={handleForgotPassword}>
-        <Text style={styles.link}>Mot de passe oublié ?</Text>
+        <Text style={styles.link}>{t("login:forgotPassword")}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={handleSignUp}>
-        <Text style={styles.link}>S'inscrire</Text>
+        <Text style={styles.link}>{t("login:signup")}</Text>
       </TouchableOpacity>
     </View>
   );

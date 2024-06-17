@@ -1,7 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function HomeScreen({ navigation }) {
+  
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -10,18 +14,11 @@ export default function HomeScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.content}>
 
         <View style={styles.presentationContainer}>
-          <Text style={styles.title}>Bienvenue sur EventConnect</Text>
-          <Text style={styles.subtitle}>Connect, Share, and Enjoy Events</Text>
+          <Text style={styles.title}>{t("home:title")}</Text>
+          <Text style={styles.subtitle}>{t("home:subtitle")}</Text>
           <Image source={require('@/assets/images/logo.jpg')} style={styles.presentationImage} />
           <Text style={styles.description}>
-            EventConnect est une plateforme où vous pouvez :
-            {"\n\n"}• Découvrir de nouveaux événements
-            {"\n"}• Partager vos expériences
-            {"\n"}• Vous connecter avec d'autres personnes partageant vos intérêts
-            {"\n"}• Fêter un anniversaire
-            {"\n"}• Organiser un événement d'entreprise ou de quartier
-            {"\n"}Que vous recherchiez des concerts, des ateliers ou des rencontres,
-            {"\n\n"}EventConnect a quelque chose pour tout le monde.
+          {t("home:description")}
           </Text>
 
 
@@ -30,10 +27,10 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.footer}>
         <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('LoginScreen')}>
-          <Text style={styles.footerButtonText}>Login</Text>
+          <Text style={styles.footerButtonText}>{t("home:signin")}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('RegisterScreen')}>
-          <Text style={styles.footerButtonText}>Sign Up</Text>
+          <Text style={styles.footerButtonText}>{t("home:signup")}</Text>
         </TouchableOpacity>
       </View>
     </View>
