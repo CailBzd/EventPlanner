@@ -2,57 +2,51 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using EventPlanner.Models;
 using EventPlanner.Features;
+using Microsoft.AspNetCore.Authorization;
+using MediatR;
 
 namespace EventPlanner.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UsersController : ControllerBase
 {
-    private readonly UserManager<User> _userManager;
+    private readonly IMediator _mediator;
 
-    public UsersController(UserManager<User> userManager)
+    public UsersController(IMediator mediator)
     {
-        _userManager = userManager;
+        _mediator = mediator;
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString());
-        if (user == null)
+        var query = new GetUserByIdQuery { Id = id };
+        var user = await _mediator.Send(query);
+        if (user != null)
         {
-            return NotFound();
+            return Ok(user);
         }
-        return Ok(user);
+
+        return NotFound();
     }
 
-    [HttpGet]
-    public IActionResult GetAllUsers()
+  
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserCommand aCommand)
     {
-        var users = _userManager.Users.ToList();
-        return Ok(users);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserCommand aCommand)
-    {
-        var user = await _userManager.FindByIdAsync(id.ToString());
-        if (user == null)
+        if (!ModelState.IsValid)
         {
-            return NotFound();
+            return BadRequest(ModelState);
         }
 
-        user.UserName = aCommand.UserName ?? user.UserName;
-        user.Email = aCommand.Email ?? user.Email;
-        // Mettre à jour d'autres propriétés nécessaires
-
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
+        var result = await _mediator.Send(aCommand);
+        if (result)
         {
-            return BadRequest(result.Errors);
+            return NoContent();
         }
 
-        return NoContent();
+        return BadRequest("Could not update user");
     }
 }

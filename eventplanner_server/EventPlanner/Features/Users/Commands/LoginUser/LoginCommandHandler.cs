@@ -8,20 +8,22 @@ using System.Text;
 
 namespace EventPlanner.Features;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
+    private readonly ITokenService _tokenService;
 
-    public LoginCommandHandler(UserManager<User> aUserManager, SignInManager<User> aSignInManager, IConfiguration aConfiguration)
+    public LoginCommandHandler(UserManager<User> aUserManager, SignInManager<User> aSignInManager,  IConfiguration aConfiguration, ITokenService aTokenService)
     {
         _userManager = aUserManager;
         _signInManager = aSignInManager;
         _configuration = aConfiguration;
+        _tokenService = aTokenService;
     }
 
-    public async Task<string> Handle(LoginCommand aRequest, CancellationToken aCancellationToken)
+    public async Task<LoginResult> Handle(LoginCommand aRequest, CancellationToken aCancellationToken)
     {
         var vUser = await _userManager.FindByNameAsync(aRequest.Username);
         if (vUser == null)
@@ -35,27 +37,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
             throw new UnauthorizedAccessException("Invalid username or password");
         }
 
-        return GenerateJwtToken(vUser);
-    }
-
-    private string GenerateJwtToken(User aUser)
-    {
-        var vClaims = new[]
+        var vToken = _tokenService.GenerateJwtToken(vUser);
+        return new LoginResult
         {
-            new Claim(JwtRegisteredClaimNames.Sub, aUser.UserName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            Token = vToken,
+            UserId = vUser.Id.ToString()
         };
-
-        var vKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var vCreds = new SigningCredentials(vKey, SecurityAlgorithms.HmacSha256);
-
-        var vToken = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: vClaims,
-            expires: DateTime.Now.AddDays(1),
-            signingCredentials: vCreds);
-
-        return new JwtSecurityTokenHandler().WriteToken(vToken);
     }
+
+
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EventPlanner.Models;
+using System.Text;
 
 public static class SeedData
 {
@@ -26,10 +27,16 @@ public static class SeedData
                 var vUser = new User
                 {
                     UserName = "testuser",
-                    Email = "testuser@example.com"
+                    Email = "testuser@example.com",
+                    Biography = "Admin user",
+                    City = "Admin City",
+                    PostalCode = "12345",
+                    Country = "Admin Country",
+                    PhoneNumber = "1234567890",
+                    SecurityStamp = Guid.NewGuid().ToString("D")
                 };
                 await aUserManager.CreateAsync(vUser, "Password123!");
-                await aUserManager.AddToRoleAsync(vUser, "User");
+                await aUserManager.AddToRoleAsync(vUser, "Admin");
             }
 
             // Seed Groups

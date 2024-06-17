@@ -1,15 +1,97 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Provider, Button } from '@ant-design/react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
+import { authService } from '@/services/authService';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LoginResult } from '../types/LoginResult';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 export default function LoginScreen() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    try {
+      const response = await authService.login("testuser", "Password123!");
+      if (response.status === 200) {
+        const data: LoginResult = response.data;
+        if (data.token && data.userId) {
+          await AsyncStorage.setItem('userToken', data.token);
+          await AsyncStorage.setItem('userId', data.userId);
+
+          router.push('/NewsScreen');
+          // Alert.alert('Succès', 'Connexion réussie');
+        } else {
+          Alert.alert('Erreur', 'Identifiants incorrects');
+        }
+      } else {
+        Alert.alert('Erreur', 'Identifiants incorrects');
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        axios.isAxiosError(error);
+        if (error.response && error.response.status === 401) {
+          Alert.alert('Erreur', 'Identifiants incorrects');
+        } else {
+          Alert.alert('Erreur', 'Une erreur est survenue');
+        }
+      } else {
+        Alert.alert('Erreur', 'Une erreur est survenue');
+      }
+    }
+  };
+
+  const handleForgotPassword = () => {
+    Alert.alert('Mot de passe oublié', 'Fonctionnalité non implémentée.');
+  };
+
+  const handleSignUp = () => {
+    router.push('/RegisterScreen');
+  };
+
   return (
-    <Provider>
-      <View style={styles.container}>
-        <Text style={styles.title}>Écran de connexion</Text>
-        <Button type="primary">Connexion</Button>
+    <View style={styles.container}>
+      <Image source={require('@/assets/images/logo.jpg')} style={styles.presentationImage} />
+      <Text style={styles.title}>Connexion</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Nom d'utilisateur"
+        autoCapitalize="none"
+        value={username}
+        onChangeText={setUsername}
+      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Mot de passe"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity
+          style={styles.showPasswordButton}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Icon name={showPassword ? 'eyeo' : 'eye'} size={20} color="#3F9296" />
+        </TouchableOpacity>
       </View>
-    </Provider>
+
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Se connecter</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={handleForgotPassword}>
+        <Text style={styles.link}>Mot de passe oublié ?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={handleSignUp}>
+        <Text style={styles.link}>S'inscrire</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -18,11 +100,65 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    padding: 20,
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  presentationImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  button: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#3F9296',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  link: {
+    color: '#3F9296',
+    fontSize: 16,
+    marginBottom: 15,
+  },
+  showPasswordButton: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
 });

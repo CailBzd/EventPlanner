@@ -18,6 +18,17 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection aServices)
     {
+        aServices.AddCors(options =>
+    {
+        options.AddPolicy("AllowAllOrigins",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
+
         aServices.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         aServices.AddMediatR(typeof(Startup));
 
@@ -28,7 +39,11 @@ public class Startup
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-        aServices.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        aServices.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -43,9 +58,10 @@ public class Startup
                 };
             });
 
+        aServices.AddScoped<ITokenService, TokenService>();
         aServices.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventP¨lanner", Version = "v0" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventPlanner", Version = "v0" });
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -83,6 +99,8 @@ public class Startup
         });
 
         app.UseRouting();
+
+        app.UseCors("AllowAllOrigins");
 
         app.UseAuthentication();
         app.UseAuthorization();

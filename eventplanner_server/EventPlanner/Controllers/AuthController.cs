@@ -32,8 +32,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var vToken = await _mediator.Send(aCommand);
-            return Ok(new { Token = vToken });
+            var vResult = await _mediator.Send(aCommand);
+            return Ok(vResult);
         }
         catch (UnauthorizedAccessException ex)
         {

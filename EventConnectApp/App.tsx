@@ -1,5 +1,12 @@
-import 'expo-router/entry';
+// App.tsx
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import RootNavigator from './app/_layout';
 
 export default function App() {
-  return null;
+  return (
+    <NavigationContainer>
+      <RootNavigator />
+    </NavigationContainer>
+  );
 }

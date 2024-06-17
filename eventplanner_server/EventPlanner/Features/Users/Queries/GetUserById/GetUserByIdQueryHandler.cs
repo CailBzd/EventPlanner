@@ -1,30 +1,21 @@
+using EventPlanner.Models;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace EventPlanner.Features;
-public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDetailDto>
+public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, User>
 {
-    private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-    public GetUserByIdQueryHandler(ApplicationDbContext aContext)
+    public GetUserByIdQueryHandler(UserManager<User> aUserManager)
     {
-        _context = aContext;
+            _userManager = aUserManager;
     }
 
-    public async Task<UserDetailDto> Handle(GetUserByIdQuery aRequest, CancellationToken aCancellationToken)
+    public async Task<User> Handle(GetUserByIdQuery aRequest, CancellationToken aCancellationToken)
     {
-        var vUserEntity = await _context.Users.FindAsync(aRequest.Id);
-
-        if (vUserEntity == null)
-        {
-            return null;
-        }
-
-        return new UserDetailDto
-        {
-            Id = vUserEntity.Id,
-            UserName = vUserEntity.UserName,
-            Email = vUserEntity.Email
-        };
+            var vUser = await _userManager.FindByIdAsync(aRequest.Id.ToString());
+            return vUser;
     }
 
 }
