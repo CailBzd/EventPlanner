@@ -12,34 +12,41 @@ export const authKeys = {
 export const authService = {
   login,
   register,
-  forgotPassword
+  forgotPassword,
+  resetPassword,
+  logout,
 };
 
 function login(username: string, password: string): Promise<AxiosResponse<LoginResult>> {
 
   return axiosApiInstance.post(API_URL + `/login`,
-    { username, password }, 
+    { username, password },
     {
-    headers: {'accept': '*/*','Content-Type': 'application/json'}
-  });
+      headers: { 'accept': '*/*', 'Content-Type': 'application/json' }
+    });
 };
 
 function register(username: string, email: string, password: string): Promise<AxiosResponse<LoginResult>> {
 
   return axiosApiInstance.post(API_URL + `/register`,
-    { username, email, password }, 
+    { username, email, password },
     {
-    headers: {'accept': '*/*','Content-Type': 'application/json'}
-  });
+      headers: { 'accept': '*/*', 'Content-Type': 'application/json' }
+    });
 };
 
-function forgotPassword(email: string): Promise<AxiosResponse<LoginResult>> {
-  return axiosApiInstance.post(API_URL + `/forgotPassword`,
-    { email }, 
+function forgotPassword(email: string): Promise<AxiosResponse<any>> {
+  return axiosApiInstance.post(API_URL + `/forgot-password`, { email });
+}
+
+function resetPassword(email: string, token: string, newPassword: string): Promise<AxiosResponse<any>> {
+  return axiosApiInstance.post(API_URL + '/reset-password', { email, token, newPassword });
+}
+
+function logout(token: string): Promise<AxiosResponse<any>> {
+  return axiosApiInstance.post(API_URL + `/logout`,{},
     {
-    headers: {'accept': '*/*','Content-Type': 'application/json'}
-  });
-};
-
-
-
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+}

@@ -59,6 +59,8 @@ public class Startup
             });
 
         aServices.AddScoped<ITokenService, TokenService>();
+        aServices.AddTransient<IEmailSender, EmailSender>();
+        
         aServices.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventPlanner", Version = "v0" });

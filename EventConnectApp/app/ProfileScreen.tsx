@@ -5,6 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../types/User';
 import { userService } from '@/services/userService';
 import { useTranslation } from 'react-i18next';
+import { ProfileStyles } from '@/styles/screens/profileStyles';
+import { authService } from '@/services/authService';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import LoadingScreen from '@/components/LoadingView';
+
+type LoginScreenNavigationProp = NativeStackNavigationProp <RootStackParamList, 'LoginScreen'>;
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
@@ -12,6 +19,8 @@ export default function ProfileScreen() {
   const [token, setToken] = useState<string>('');
   const [profileImageBase64, setProfileImageBase64] = useState<string | null | undefined>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+
 
   const { t } = useTranslation();
 
@@ -106,60 +115,84 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleLogout = async () => {
+    const token = await AsyncStorage.getItem('userToken');
+    if (token) {
+      try {
+        const response = await authService.logout(token);
+
+        if (response.status === 200) {
+          await AsyncStorage.removeItem('userToken');
+          await AsyncStorage.removeItem('userId');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'HomeScreen' }],
+          });
+        } else {
+          Alert.alert(t('error1'), t('logout:failed'));
+        }
+      } catch (error) {
+        Alert.alert(t('error2'), t('logout:anErrorOccurred'));
+        console.error('Error during logout:', error);
+      }
+    }
+  };
+
+
   const avatarSource = user?.profilePicture
     ? { uri: `data:image/png;base64,${user.profilePicture}` }
     : require('../assets/images/logo.jpg');  // Assurez-vous d'avoir une image par défaut dans votre dossier assets
 
-  if (!user) {
-    return <Text>Loading...</Text>;
-  }
+    if (!user) {
+      return <LoadingScreen />;
+    }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.avatarContainer}>
+    <View style={ProfileStyles.container}>
+      <View style={ProfileStyles.avatarContainer}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Image source={avatarSource} style={styles.avatar} />
+          <Image source={avatarSource} style={ProfileStyles.avatar} />
         </TouchableOpacity>
       </View>
       <TextInput
-        style={styles.input}
+        style={ProfileStyles.input}
         placeholder="Name"
         value={user.userName}
         onChangeText={(text) => setUser({ ...user, userName: text })}
       />
       <TextInput
-        style={styles.input}
+        style={ProfileStyles.input}
         placeholder="Email"
         value={user.email}
         onChangeText={(text) => setUser({ ...user, email: text })}
       />
       <TextInput
-        style={styles.input}
+        style={ProfileStyles.input}
         placeholder="Biography"
         value={user.biography}
         onChangeText={(text) => setUser({ ...user, biography: text })}
         multiline
       />
       <TextInput
-        style={styles.input}
+        style={ProfileStyles.input}
         placeholder="City"
         value={user.city}
         onChangeText={(text) => setUser({ ...user, city: text })}
       />
       <TextInput
-        style={styles.input}
+        style={ProfileStyles.input}
         placeholder="Postal Code"
         value={user.postalCode}
         onChangeText={(text) => setUser({ ...user, postalCode: text })}
       />
       <TextInput
-        style={styles.input}
+        style={ProfileStyles.input}
         placeholder="Country"
         value={user.country}
         onChangeText={(text) => setUser({ ...user, country: text })}
       />
       <TextInput
-        style={styles.input}
+        style={ProfileStyles.input}
         placeholder="Phone Number"
         value={user.phoneNumber}
         onChangeText={(text) => setUser({ ...user, phoneNumber: text })}
@@ -171,132 +204,28 @@ export default function ProfileScreen() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Select Image Source</Text>
-            <TouchableOpacity onPress={pickImage} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Choose from Library</Text>
+        <View style={ProfileStyles.modalContainer}>
+          <View style={ProfileStyles.modalView}>
+            <Text style={ProfileStyles.modalText}>{t('profile:selectImage')}</Text>
+            <TouchableOpacity onPress={pickImage} style={ProfileStyles.modalButton}>
+              <Text style={ProfileStyles.modalButtonText}>{t('profile:fromLibrary')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={takePhoto} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Take Photo</Text>
+            <TouchableOpacity onPress={takePhoto} style={ProfileStyles.modalButton}>
+              <Text style={ProfileStyles.modalButtonText}>{t('profile:takePhoto')}Take Photo</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Cancel</Text>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={ProfileStyles.modalButton}>
+              <Text style={ProfileStyles.modalButtonText}>{t('general:cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>{t('save')}</Text>
+      <TouchableOpacity style={ProfileStyles.button} onPress={handleSave}>
+        <Text style={ProfileStyles.buttonText}>{t('general:save')}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogout}>
+        <Text style={ProfileStyles.link}>{t('profile:logout')}</Text>
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  button: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#3F9296',
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  saveButton: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-
-  avatarContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  iconContainer: {
-    flexDirection: 'row',
-    marginLeft: 20,
-  },
-  iconButton: {
-    marginHorizontal: 10,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)"
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-    fontSize: 18
-  },
-  modalButton: {
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
-    marginVertical: 5
-  },
-  modalButtonText: {
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
-    marginVertical: 5
-  },
-  buttonClose: {
-    backgroundColor: "#3F9296"
-  },
-  icon: {
-    width: 40,
-    height: 40,
-  },
-});
-
-

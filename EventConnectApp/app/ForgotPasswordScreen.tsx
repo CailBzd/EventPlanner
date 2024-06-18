@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { userService } from '@/services/userService'; // Assurez-vous que ce service est correctement configuré pour gérer les demandes de réinitialisation de mot de passe
+import { authService } from '@/services/authService';
+import { ForgotPasswordStyles } from '@/styles/screens/forgotPasswordStyles';
+import { isMail } from '@/utils/validation';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const ForgotPasswordScreen = () => {
+type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'LoginScreen'>;
+export default function ForgotPasswordScreen() {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const handleForgotPassword = async () => {
     if (!email) {
@@ -14,69 +20,54 @@ const ForgotPasswordScreen = () => {
       return;
     }
 
+    if (!isMail(email)) {
+      Alert.alert(t("forgotPassword:title"), t('general:alert.mailInvalid'));
+      return;
+    }
+
     setIsLoading(true);
     try {
-      await userService.forgotPassword(email);
-      Alert.alert(t('forgotPassword:successMessage'));
+      const response = await authService.forgotPassword(email);
+      if (response.status === 200) {
+        Alert.alert(t('general:success'), t('forgotPassword:emailSent'));
+      } else {
+        Alert.alert(t('general:error'), t('forgotPassword:failedToSendEmail'));
+      }
     } catch (error) {
-      console.error('Error requesting password reset:', error);
-      Alert.alert(t('forgotPassword:errorMessage'));
+      Alert.alert(t('general:error'), t('forgotPassword:anErrorOccurred'));
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleSignUp = () => {
+    navigation.push('LoginScreen');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t('forgotPassword:title')}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder={t('forgotPassword:emailPlaceholder')}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleForgotPassword} disabled={isLoading}>
-        <Text style={styles.buttonText}>
+    <View style={ForgotPasswordStyles.container}>
+      <Image source={require('@/assets/images/logo.jpg')} style={ForgotPasswordStyles.presentationImage} />
+      <Text style={ForgotPasswordStyles.title}>{t('forgotPassword:title')}</Text>
+      <View style={ForgotPasswordStyles.mainContainer}>
+        <TextInput
+          style={ForgotPasswordStyles.input}
+          placeholder={t('forgotPassword:emailPlaceholder')}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
+      <TouchableOpacity style={ForgotPasswordStyles.button} onPress={handleForgotPassword} disabled={isLoading}>
+        <Text style={ForgotPasswordStyles.buttonText}>
           {isLoading ? t('forgotPassword:loading') : t('forgotPassword:submitButton')}
         </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={handleSignUp}>
+        <Text style={ForgotPasswordStyles.link}>{t("general:back")}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#3F9296',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
-
-export default ForgotPasswordScreen;
