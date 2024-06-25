@@ -11,18 +11,31 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LoadingScreen from '@/components/LoadingView';
 
-type LoginScreenNavigationProp = NativeStackNavigationProp <RootStackParamList, 'LoginScreen'>;
+type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'LoginScreen'>;
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<User | null>(null);
   const [userId, setUserId] = useState<string>('');
-  const [token, setToken] = useState<string>('');
+  const [token, setToken] = useState<string | null>();
   const [profileImageBase64, setProfileImageBase64] = useState<string | null | undefined>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
 
   const { t } = useTranslation();
+
+  // useEffect(() => {
+  //   const loadUserData = async () => {
+  //     const userData = await AsyncStorage.getItem('user');
+  //     console.log("loadUserData");
+  //     console.log(userData);
+  //     if (userData) {
+  //       setUser(JSON.parse(userData));
+  //     }
+  //   };
+
+  //   loadUserData();
+  // }, []);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -101,6 +114,8 @@ export default function ProfileScreen() {
         phoneNumber: user.phoneNumber,
       };
 
+      const userData = await AsyncStorage.getItem('user');
+      setToken(userData)
       const response = await userService.updateUser(updateUserCommand, token);
 
       if (response.status === 204) {
@@ -124,6 +139,8 @@ export default function ProfileScreen() {
         if (response.status === 200) {
           await AsyncStorage.removeItem('userToken');
           await AsyncStorage.removeItem('userId');
+          await AsyncStorage.removeItem('userPicture');
+
           navigation.reset({
             index: 0,
             routes: [{ name: 'HomeScreen' }],
@@ -143,9 +160,9 @@ export default function ProfileScreen() {
     ? { uri: `data:image/png;base64,${user.profilePicture}` }
     : require('../assets/images/logo.jpg');  // Assurez-vous d'avoir une image par défaut dans votre dossier assets
 
-    if (!user) {
-      return <LoadingScreen />;
-    }
+  if (!user) {
+    return <LoadingScreen />;
+  }
 
   return (
     <View style={ProfileStyles.container}>

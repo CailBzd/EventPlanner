@@ -46,7 +46,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
         return new LoginResult
         {
             Token = vToken,
-            UserId = vUser.Id.ToString()
+            UserId = vUser.Id.ToString(),
+            ProfilePicture = vUser.ProfilePicture != null ? vUser.ProfilePicture : null
         };
     }
 

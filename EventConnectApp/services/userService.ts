@@ -15,7 +15,7 @@ export const userService = {
 };
 
 
-function updateUser(userData: User, token: string): Promise<AxiosResponse<void>> {
+function updateUser(userData: User, token: string | undefined | null): Promise<AxiosResponse<void>> {
   return axiosApiInstance.put(API_URL + '/update', userData, {
     headers: {
       'accept': '*/*',

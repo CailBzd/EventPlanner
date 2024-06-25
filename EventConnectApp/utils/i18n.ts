@@ -59,6 +59,15 @@ const resources = {
         },
         news: {
             createEvent: "Create event",
+            noEvents: "No events",
+        },        
+        event: {
+            title: "Title",
+            createEvent: "Create",
+            description: "Description",
+            location: "Location",
+            startDate: "Start Date",
+            endDate: "End Date"
         },
         general: {
             back: "Back",
@@ -134,8 +143,16 @@ const resources = {
         },
         news: {
             createEvent: "Créer un événement",
+            noEvents: "Aucun événement",
         },
-
+        event: {
+            title: "Titre",
+            createEvent: "Créer",
+            description: "Description",
+            location: "Lieu",
+            startDate: "Date de début",
+            endDate: "Date de fin"
+        },
         general: {
             back: "Retour",
             save: "Enregistrer",

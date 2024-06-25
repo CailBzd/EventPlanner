@@ -7,5 +7,6 @@ type RootStackParamList = {
     NotFoundScreen: undefined;
     ProfileScreen: undefined;
     RegisterScreen: undefined;
+    CreateEventScreen: undefined;
   };
   

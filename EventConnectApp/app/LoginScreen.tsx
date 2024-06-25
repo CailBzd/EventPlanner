@@ -24,12 +24,15 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await authService.login(username, password);
+      const response = await authService.login("testuser", "Password123!");
+      
       if (response.status === 200) {
         const data: LoginResult = response.data;
         if (data.token && data.userId) {
+          console.log(data.token);
           await AsyncStorage.setItem('userToken', data.token);
           await AsyncStorage.setItem('userId', data.userId);
+          // await AsyncStorage.setItem('userPicture', data.profilePicture);
 
           navigation.reset({
             index: 0,

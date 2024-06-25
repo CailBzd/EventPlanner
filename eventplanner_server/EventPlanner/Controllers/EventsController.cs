@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using EventPlanner.Features;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EventPlanner.Controllers;
 
