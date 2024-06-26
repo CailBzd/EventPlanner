@@ -10,4 +10,5 @@ public class UpdateEventCommand : IRequest<bool>
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public string Location { get; set; }
+    public byte[]? Image { get; set; }
 }

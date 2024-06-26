@@ -23,7 +23,7 @@ public class EventsController : ControllerBase
         return Ok(new { Id = vEventId });
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{aId}")]
     public async Task<IActionResult> GetEventById(Guid aId)
     {
         var vEventDetail = await _mediator.Send(new GetEventByIdQuery { Id = aId });
@@ -41,7 +41,7 @@ public class EventsController : ControllerBase
         return Ok(vEvents);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{aId}")]
     public async Task<IActionResult> UpdateEvent(Guid aId, [FromBody] UpdateEventCommand aCommand)
     {
         aCommand.Id = aId;
@@ -49,7 +49,7 @@ public class EventsController : ControllerBase
         return vResult ? NoContent() : NotFound();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{aId}")]
     public async Task<IActionResult> DeleteEvent(Guid aId)
     {
         var vResult = await _mediator.Send(new DeleteEventCommand { Id = aId });

@@ -26,6 +26,7 @@ function updateUser(userData: User, token: string | undefined | null): Promise<A
 }
 
 function getUser(id: string, token: string): Promise<AxiosResponse<User>> {
+  console.log(process.env.EXPO_PUBLIC_API_URL)
   return axiosApiInstance.get(API_URL + '/' + id, {
     headers: {
       'accept': '*/*',

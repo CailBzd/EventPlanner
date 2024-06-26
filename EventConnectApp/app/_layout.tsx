@@ -15,6 +15,7 @@ import EventScreen from './EventScreen';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateEventScreen from './CreateEventScreen';
+import CalendarScreen from './CalendarScreen';
 
 dayjs.locale("fr");
 
@@ -56,6 +57,7 @@ export default function RootNavigator() {
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} options={{ headerShown: false }} />
       <Stack.Screen name="CreateEventScreen" component={CreateEventScreen} options={{ headerShown: false }} />
     </Stack.Navigator>

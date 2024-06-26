@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from './globalStyles';
 
 export const NewsStyles = StyleSheet.create({
   container: {
@@ -10,8 +11,6 @@ export const NewsStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    paddingTop: 40,
-    marginBottom: 10,
     backgroundColor: '#3F9296',
   },
   title: {
@@ -22,23 +21,31 @@ export const NewsStyles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#fff',
   },
   eventItem: {
-    marginBottom: 15,
-    padding: 10,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  eventTextContainer: {
+    flex: 1,
+    paddingRight: 10,
   },
   eventTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },
+  eventImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 5,
+  },
   buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     padding: 20,
     alignItems: 'center',
   },
@@ -46,12 +53,19 @@ export const NewsStyles = StyleSheet.create({
     backgroundColor: '#3F9296',
     padding: 15,
     borderRadius: 5,
-    width: '100%',
     alignItems: 'center',
+    width: '65%',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  calendarButton: {
+    backgroundColor: '#3F9296',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '30%',
   },
 });

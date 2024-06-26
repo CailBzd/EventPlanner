@@ -7,6 +7,7 @@ export interface Event {
   startDate: Date;
   endDate: Date;
   location: string;
+  image : string  | null | undefined;
 }
 
 

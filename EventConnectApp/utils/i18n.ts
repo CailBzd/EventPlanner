@@ -67,13 +67,18 @@ const resources = {
             description: "Description",
             location: "Location",
             startDate: "Start Date",
-            endDate: "End Date"
+            endDate: "End Date",
+            takePhoto: "Take Photo",
+            fromLibrary: "Choose from Library",
+            selectImage: "Select Image Source",
         },
         general: {
             back: "Back",
             save: "Save",
             cancel: "Cancel",
+            delete: "Delete",
             success: "Success",
+            loading: "Loading ...",
             error: "Error",
             ok: "OK",
             alert: {
@@ -151,13 +156,18 @@ const resources = {
             description: "Description",
             location: "Lieu",
             startDate: "Date de début",
-            endDate: "Date de fin"
+            endDate: "Date de fin",
+            takePhoto: "Prendre une photo",
+            fromLibrary: "Choisir dans la galerie",
+            selectImage: "Sélectionner une image",
         },
         general: {
             back: "Retour",
             save: "Enregistrer",
             cancel: "Annuler",
+            delete: "Supprimer",
             success: "Succès",
+            loading: "Chargement ...",
             error: "Erreur",
             ok: "OK",
             alert: {

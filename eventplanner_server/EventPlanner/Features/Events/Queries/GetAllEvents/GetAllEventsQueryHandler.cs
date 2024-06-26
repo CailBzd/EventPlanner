@@ -26,7 +26,8 @@ public class GetAllEventsQueryHandler : IRequestHandler<GetAllEventsQuery, List<
                 Description = vEventEntity.Description,
                 StartDate = vEventEntity.StartDate,
                 EndDate = vEventEntity.EndDate,
-                Location = vEventEntity.Location
+                Location = vEventEntity.Location,
+                Image = vEventEntity.Image,
             });
         }
 

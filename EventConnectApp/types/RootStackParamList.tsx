@@ -8,5 +8,6 @@ type RootStackParamList = {
     ProfileScreen: undefined;
     RegisterScreen: undefined;
     CreateEventScreen: undefined;
+    CalendarScreen: undefined;
   };
   

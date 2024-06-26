@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Button, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Alert, TextInput, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../types/User';
@@ -49,6 +49,15 @@ export default function ProfileScreen() {
           setUser(response.data);
         } catch (error) {
           console.error('Error fetching user data:', error);
+
+          await AsyncStorage.removeItem('userToken');
+          await AsyncStorage.removeItem('userId');
+          await AsyncStorage.removeItem('userPicture');
+
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'HomeScreen' }],
+          });
         }
       }
     };

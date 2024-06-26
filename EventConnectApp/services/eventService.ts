@@ -12,6 +12,8 @@ export const eventService = {
     getEvents,
     getEventById,
     createEvent,
+    updateEvent,
+    deleteEvent,
 };
 
 function getEvents(token: string | null | undefined): Promise<AxiosResponse<Event[]>> {
@@ -35,5 +37,16 @@ function getEventById(eventId: string, token: string): Promise<AxiosResponse<Eve
 async function createEvent(event: any, token: string | null): Promise<AxiosResponse<any>> {
     return axiosApiInstance.post(API_URL, event, {
         headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
+async function updateEvent(eventId: string, event: any, token: string | null): Promise<AxiosResponse<any>> {
+    return axiosApiInstance.put(API_URL + '/' + eventId, event, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+}
+async function deleteEvent(eventId: string, token: string | null): Promise<AxiosResponse<any>> {
+    return axiosApiInstance.delete(API_URL + '/' + eventId, {
+      headers: { Authorization: `Bearer ${token}` },
     });
 }

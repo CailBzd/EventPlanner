@@ -24,6 +24,7 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, boo
         vEventEntity.StartDate = aRequest.StartDate;
         vEventEntity.EndDate = aRequest.EndDate;
         vEventEntity.Location = aRequest.Location;
+        vEventEntity.Image = aRequest.Image;
 
         _context.Events.Update(vEventEntity);
         await _context.SaveChangesAsync(aCancellationToken);
