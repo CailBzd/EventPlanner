@@ -1,7 +1,8 @@
 import React from 'react';
-import {  Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { TouchableOpacity, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { HomeStyles } from '@/styles/screens/homeStyles';
+import { View, Text, ScrollView } from '@/components/ui'
 
 export default function HomeScreen({ navigation }) {
 
@@ -17,7 +18,11 @@ export default function HomeScreen({ navigation }) {
         <View style={HomeStyles.presentationContainer}>
           <Text style={HomeStyles.title}>{t("home:title")}</Text>
           <Text style={HomeStyles.subtitle}>{t("home:subtitle")}</Text>
-          <Image source={require('@/assets/images/logo.jpg')} style={HomeStyles.presentationImage} />
+          <Image
+            style={HomeStyles.presentationImage}
+            source={require("../assets/images/logo.jpg")}
+            alt="image"
+          />
           <Text style={HomeStyles.description}>
             {t("home:description")}
           </Text>

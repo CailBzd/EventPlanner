@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, Image, TouchableOpacity, Alert } from 'react-native';
+import { TouchableOpacity, TextInput, Image } from 'react-native';
+import { Alert, View, Text, AlertIcon, AlertText, VStack, CheckCircleIcon, LockIcon } from '@/components/ui'
 import axios from 'axios';
 import { authService } from '@/services/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,8 +25,9 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
+      console.log("handleLogin");
       const response = await authService.login("testuser", "Password123!");
-      
+      console.log(response.status);
       if (response.status === 200) {
         const data: LoginResult = response.data;
         if (data.token && data.userId) {
@@ -40,21 +42,64 @@ export default function LoginScreen() {
           });
           // Alert.alert('Succès', 'Connexion réussie');
         } else {
-          Alert.alert('Erreur', 'Identifiants incorrects');
+          <Alert action="error">
+            <AlertIcon as={LockIcon} size="xl" className="mr-3" />
+            <VStack space="xs">
+              <AlertText className="font-bold">Identifiants incorrects!</AlertText>
+              <AlertText>
+                L'identifiant ou le mot de passe ne sont sont pas corrects.
+              </AlertText>
+            </VStack>
+          </Alert>
         }
       } else {
-        Alert.alert('Erreur', 'Identifiants incorrects');
+        console.log("erreur");
+        <Alert action="error">
+          <AlertIcon as={LockIcon} size="xl" className="mr-3" />
+          <VStack space="xs">
+            <AlertText className="font-bold">Identifiants incorrects!</AlertText>
+            <AlertText>
+              L'identifiant ou le mot de passe ne sont sont pas corrects.
+            </AlertText>
+          </VStack>
+        </Alert>
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         axios.isAxiosError(error);
         if (error.response && error.response.status === 401) {
-          Alert.alert('Erreur', 'Identifiants incorrects');
+
+          console.log("test");
+          <Alert action="error">
+            <AlertIcon as={LockIcon} size="xl" className="mr-3" />
+            <VStack space="xs">
+              <AlertText className="font-bold">Identifiants incorrects!</AlertText>
+              <AlertText>
+                L'identifiant ou le mot de passe ne sont sont pas corrects.
+              </AlertText>
+            </VStack>
+          </Alert>;
         } else {
-          Alert.alert('Erreur', 'Une erreur est survenue');
+          <Alert action="error">
+            <AlertIcon as={LockIcon} size="xl" className="mr-3" />
+            <VStack space="xs">
+              <AlertText className="font-bold">Erreur!</AlertText>
+              <AlertText>
+                Une erreur est survenue.
+              </AlertText>
+            </VStack>
+          </Alert>
         }
       } else {
-        Alert.alert('Erreur', 'Une erreur est survenue');
+        <Alert action="error">
+          <AlertIcon as={LockIcon} size="xl" className="mr-3" />
+          <VStack space="xs">
+            <AlertText className="font-bold">Erreur!</AlertText>
+            <AlertText>
+              Une erreur est survenue.
+            </AlertText>
+          </VStack>
+        </Alert>
       }
     }
   };
@@ -69,7 +114,7 @@ export default function LoginScreen() {
 
   return (
     <View style={LoginStyles.container}>
-      <Image source={require('@/assets/images/logo.jpg')} style={LoginStyles.presentationImage} />
+      <Image source={require('@/assets/images/logo.jpg')} alt="logo" style={LoginStyles.presentationImage} />
       <Text style={LoginStyles.title}>{t("login:title")}</Text>
 
       <TextInput

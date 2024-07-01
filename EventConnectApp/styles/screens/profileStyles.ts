@@ -34,7 +34,7 @@ export const ProfileStyles = StyleSheet.create({
     color: '#fff',
   },
   link: {
-    color: Colors.light.text,
+    color: Colors.primaryColor,
     fontSize: 16,
     marginBottom: 15,
   },

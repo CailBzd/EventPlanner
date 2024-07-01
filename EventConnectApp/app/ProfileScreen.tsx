@@ -41,7 +41,7 @@ export default function ProfileScreen() {
     const loadUserData = async () => {
       const storedUserId = await AsyncStorage.getItem('userId');
       const storedToken = await AsyncStorage.getItem('userToken');
-      if (storedUserId && storedToken) {
+      if (storedUserId && storedToken) { 
         setUserId(storedUserId);
         setToken(storedToken);
         try {

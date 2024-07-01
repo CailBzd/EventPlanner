@@ -50,6 +50,8 @@ export default function CreateEventScreen() {
         }
     };
 
+    const handleCancelEvent = async () => { navigation.goBack(); };
+
     return (
         <ScrollView contentContainerStyle={CreateEventStyles.container}>
             <View style={CreateEventStyles.header}>
@@ -118,6 +120,10 @@ export default function CreateEventScreen() {
 
                 <TouchableOpacity style={CreateEventStyles.button} onPress={handleCreateEvent}>
                     <Text style={CreateEventStyles.buttonText}>{t('event:createEvent')}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={CreateEventStyles.button} onPress={handleCancelEvent}>
+                    <Text style={CreateEventStyles.buttonText}>{t('general:cancel')}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>

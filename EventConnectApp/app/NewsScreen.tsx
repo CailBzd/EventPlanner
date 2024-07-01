@@ -32,12 +32,10 @@ export default function NewsScreen() {
 
   const loadEvents = async () => {
     try {
-      console.log("loadEvents");
       const _token = await AsyncStorage.getItem('userToken');
       setToken(_token);
 
       const response = await eventService.getEvents(_token);
-      console.log(response.data);
       setEvents(response.data);
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -58,20 +56,7 @@ export default function NewsScreen() {
   );
 
   const handleCreateEvent = async () => {
-    console.log("Create an event");
-
-    const token = await AsyncStorage.getItem('userToken');
-    if (token) {
-      try {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'HomeScreen' }],
-        });
-      } catch (error) {
-        Alert.alert(t('error2'), t('logout:anErrorOccurred'));
-        console.error('Error during logout:', error);
-      }
-    }
+    navigation.push('CreateEventScreen');
   };
 
   const handleAvatarPress = () => {
@@ -111,7 +96,7 @@ export default function NewsScreen() {
   if (loading) {
     return <LoadingScreen />;
   }
-  
+
   return (
     <View style={NewsStyles.container}>
       <View style={NewsStyles.header}>
